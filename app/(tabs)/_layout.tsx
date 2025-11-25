@@ -1,35 +1,37 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
-
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import TabBar from "@/components/tabBar/tabBar";
+import { TAB_NAME } from "@/constants/tabBar";
+import { LanguageContext } from "@/context/LanguageContext";
+import { Tabs } from "expo-router";
+import { useContext } from "react";
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
+  const { language } = useContext(LanguageContext);
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
-        tabBarButton: HapticTab,
-      }}>
+      }}
+      tabBar={(props) => <TabBar {...props} />}
+    >
       <Tabs.Screen
-        name="index"
+        name="flight"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          title: language === "EN" ? TAB_NAME.en.flight : TAB_NAME.mn.flight,
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="notam"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: language === "EN" ? TAB_NAME.en.notam : TAB_NAME.mn.notam,
         }}
       />
+      <Tabs.Screen
+        name="aip"
+        options={{
+          title: language === "EN" ? TAB_NAME.en.aip : TAB_NAME.mn.aip,
+        }}
+      />
+      <Tabs.Screen />
     </Tabs>
   );
 }
