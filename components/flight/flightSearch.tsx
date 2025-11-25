@@ -1,6 +1,6 @@
 // components/flight/FlightSearch.tsx
 
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 import React from "react";
 // useResponsiveSize-ийн кодыг харуулаагүй тул dummy hook үүсгэсэн.
 import Svg, {
@@ -10,6 +10,13 @@ import Svg, {
   Rect,
   Circle,
   FeDropShadow,
+  Filter,
+  FeOffset,
+  FeGaussianBlur,
+  FeFlood,
+  FeComposite,
+  FeMerge,
+  FeMergeNode,
 } from "react-native-svg";
 import { Colors } from "../../constants/color";
 import { useResponsiveSize } from "@/hooks/useResponsiveSize";
@@ -17,7 +24,7 @@ import { useResponsiveSize } from "@/hooks/useResponsiveSize";
 // NOTE: useResponsiveSize hook-ийн кодыг харуулаагүй тул загвар үүсгэв.
 
 const FlightSearch = () => {
-  const { width } = useResponsiveSize();
+  const { width, height } = useResponsiveSize();
 
   const cardWidth = width * 0.95;
   const radius = 30;
@@ -57,25 +64,38 @@ const FlightSearch = () => {
 `;
 
   return (
-    // 2. Хөндлөнгөөр төвлөрүүлэх (Horizontal Center)
     <View style={[styles.header, { width: cardWidth }]}>
       <Svg width={cardWidth} height={cardHeight}>
         <Defs>
-          {/* Сүүдэрийг тодорхойлох Filter */}
-          <FeDropShadow
-            id="ticketShadow"
-            dx="0" // X-тэнхлэгийн шилжилт
-            dy="5" // Y-тэнхлэгийн шилжилт (доошоо)
-            stdDeviation="3" // Блэрийн хэмжээ
-            floodColor="#000000" // Сүүдрийн өнгө
-            floodOpacity="0.25" // Сүүдрийн тунгалаг байдал
-          />
           <ClipPath id="ticketClip">
             <Path d={path} />
           </ClipPath>
+          <Filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+            <FeFlood floodColor="#000000" floodOpacity="0.15" result="flood" />
+            <FeGaussianBlur in="flood" stdDeviation="5" result="blurred" />
+            <FeOffset in="blurred" dx="0" dy="5" result="offset" />
+            <FeComposite in="SourceGraphic" in2="offset" operator="over" />
+          </Filter>
+          <Filter id="boxShadow" x="-10%" y="-10%" width="120%" height="120%">
+            <FeOffset result="offOut" in="SourceGraphic" dx="0" dy="0" />
+            <FeGaussianBlur result="blurOut" in="offOut" stdDeviation="5" />
+            <FeFlood
+              floodColor="#000000"
+              floodOpacity="0.2"
+              result="theColor"
+            />
+            <FeComposite
+              result="shadowColor"
+              in="theColor"
+              in2="blurOut"
+              operator="in"
+            />
+            <FeMerge>
+              <FeMergeNode in="shadowColor" />
+              <FeMergeNode in="SourceGraphic" />
+            </FeMerge>
+          </Filter>
         </Defs>
-
-        {/* Тасалбарын суурь (Background Rect) */}
         <Rect
           width={cardWidth}
           height={cardHeight}
@@ -83,9 +103,23 @@ const FlightSearch = () => {
           stroke={Colors.background}
           clipPath="url(#ticketClip)"
           strokeWidth="1"
-          filter="url(#ticketShadow)"
+          filter="url(#boxShadow)"
         />
       </Svg>
+      <View style={[styles.absoluteOverlay, { width: cardWidth }]}>
+        <View style={styles.searchHeader}>
+          <Text style={{ fontSize: 18, fontFamily: "Bold" }}>
+            Search for Flights
+          </Text>
+          <View style={styles.inputWrapper}>
+            <TextInput
+              style={styles.input}
+              placeholder={"Enter here"}
+              placeholderTextColor="#A9A9A9" // Саарал өнгө
+            />
+          </View>
+        </View>
+      </View>
     </View>
   );
 };
@@ -94,16 +128,36 @@ export default FlightSearch;
 
 const styles = StyleSheet.create({
   header: {
-    // 3. Хөндлөнгөөр төвлөрүүлэх гол өөрчлөлт:
     position: "absolute",
-    top: 100, // Дээд талаас 100 зай авах
-    // Хэрэв parent View-г ашиглахгүй бол:
-    alignSelf: "center", // Энэ нь View-г эцэг элементийн төвд байрлуулна
-    // Эсвэл: left: 0, right: 0, marginHorizontal: 'auto'
-
-    // Энэ компонентын доторх Svg-ийг төвлөрүүлэх шаардлагагүй (учир нь Svg нь View-тэй ижил хэмжээтэй болсон)
+    top: 100,
+    alignSelf: "center",
     alignItems: "center",
-
-    // Debug зорилготой backgroundColor-ийг устгасан
+  },
+  absoluteOverlay: {
+    position: "absolute",
+    // padding: 20, // Энэ утгаас болж position таарч өгөхгүй байсан
+  },
+  searchHeader: {
+    top: 25,
+    alignItems: "center",
+  },
+  inputWrapper: {
+    height: 50,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#000",
+    borderRadius: 15,
+    marginTop: 16,
+    marginHorizontal: 50,
+  },
+  input: {
+    flex: 1,
+    paddingHorizontal: 20,
+    fontSize: 16,
+    color: "#333",
+    textAlign: "center", // Зургийн дагуу текстийг төвлөрүүлэх
   },
 });

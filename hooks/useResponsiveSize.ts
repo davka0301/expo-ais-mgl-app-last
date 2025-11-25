@@ -15,13 +15,10 @@ export function useResponsiveSize() {
   const { width, height } = screen;
 
   const headerTop = height * 0.15;
-  const isTablet = width >= 600;
-  const isFoldable = width > 500 && width < 800;
 
   return {
     width,
     height,
     headerTop,
-    isFoldable,
   };
 }
