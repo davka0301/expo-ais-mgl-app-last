@@ -24,9 +24,9 @@ export default function RootLayout() {
   if (!fontsLoaded) return null;
   return (
     <LanguageProvider>
-      <Stack initialRouteName="welcome">
+      <Stack initialRouteName="index">
         <Stack.Screen
-          name="welcome"
+          name="index"
           options={{
             headerShown: false,
           }}
