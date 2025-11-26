@@ -1,14 +1,14 @@
-import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import React from "react";
 
-const AIP = () => {
+const Bookmark = () => {
   return (
     <View>
-      <Text>AIP</Text>
+      <Text>Bookmark</Text>
     </View>
   );
 };
 
-export default AIP;
+export default Bookmark;
 
 const styles = StyleSheet.create({});

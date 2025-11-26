@@ -1,0 +1,35 @@
+export interface AllFlightProps {
+  arr_ad: string;
+  dep_ad_code: string;
+  arr_location: string;
+  arr_ad_code: string;
+  company_abbr: string;
+  remaining_road: string;
+  arr_location_en: string;
+  status_en: string;
+  dep_location: string;
+  duration: string;
+  takeoff_time: string;
+  company_logo: string;
+  landing_time: string;
+  duration_percent: string;
+  flight_type: string;
+  company: string;
+  traded_road: string;
+  dep_location_en: string;
+  fpl_time: string;
+  dep_time: string;
+  aircraft_type: string;
+  flight_id: string;
+  arr_local_time: string;
+  pln_time: string;
+  dep_local_time: string;
+  iata: string;
+  icao: string;
+  dep_ad: string;
+  dep_ad_en: string;
+  arr_ad_en: string;
+  schedule_id: string;
+  dla_time: string;
+  status: string;
+}

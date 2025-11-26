@@ -1,14 +1,14 @@
-import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import React from "react";
 
-const AIP = () => {
+const FlightId = () => {
   return (
     <View>
-      <Text>AIP</Text>
+      <Text>FlightIdlight_id</Text>
     </View>
   );
 };
 
-export default AIP;
+export default FlightId;
 
 const styles = StyleSheet.create({});

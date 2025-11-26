@@ -1,14 +1,14 @@
-import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import React from "react";
 
-const AIP = () => {
+const NotamCard = () => {
   return (
     <View>
-      <Text>AIP</Text>
+      <Text>NotamCard</Text>
     </View>
   );
 };
 
-export default AIP;
+export default NotamCard;
 
 const styles = StyleSheet.create({});

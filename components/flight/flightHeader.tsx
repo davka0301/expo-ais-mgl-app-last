@@ -7,13 +7,14 @@ import {
   View,
 } from "react-native";
 import React, { useLayoutEffect } from "react";
-import { Stack, useNavigation } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useLanguage } from "@/context/LanguageContext";
 import { Colors } from "@/constants/color";
 import { useResponsiveSize } from "@/hooks/useResponsiveSize";
+import { useRouter } from "expo-router";
 
 const FlightHeader = () => {
+  const router = useRouter();
   const { width, headerTop } = useResponsiveSize();
   const { language, toggleLanguage } = useLanguage();
   return (
@@ -39,7 +40,10 @@ const FlightHeader = () => {
           </View>
 
           <View style={styles.bar}>
-            <TouchableOpacity style={styles.roundButton}>
+            <TouchableOpacity
+              onPress={() => router.push("/flight/bookmark/bookmark")}
+              style={styles.roundButton}
+            >
               <Ionicons
                 name="bookmark-outline"
                 size={22}
