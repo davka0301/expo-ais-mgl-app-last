@@ -36,7 +36,8 @@ export const useAllFlight = (
               f.dep_ad_en.toLowerCase().includes(q) ||
               f.dep_ad.toLowerCase().includes(q) ||
               f.arr_ad_en.toLowerCase().includes(q) ||
-              f.arr_ad.toLowerCase().includes(q)
+              f.arr_ad.toLowerCase().includes(q) ||
+              f.company.toLowerCase().includes(q)
             );
           });
           setData(flights);

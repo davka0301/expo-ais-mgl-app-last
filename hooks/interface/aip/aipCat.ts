@@ -1,0 +1,5 @@
+export interface AipCat {
+  cat_name: string;
+  cat_code: string;
+  cat_name_en: string;
+}

@@ -65,7 +65,6 @@ const Searchflight = ({
   };
 
   const handleSearch = () => {
-    console.log("--------", search);
     router.push({
       pathname: "/flight/searchFilter/searchFilter",
       params: {

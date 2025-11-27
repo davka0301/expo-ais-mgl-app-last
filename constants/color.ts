@@ -8,4 +8,5 @@ export const Colors = {
   text_dark: "#000",
   text_white: "#fff",
   text_grey: "#555",
+  aip_searchBg: "#ddddee",
 };

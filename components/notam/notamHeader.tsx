@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
   seriesWrapper: {
     width: "100%",
     alignItems: "center",
-    marginTop: 60,
+    marginTop: 20,
   },
 
   seriesContainer: {

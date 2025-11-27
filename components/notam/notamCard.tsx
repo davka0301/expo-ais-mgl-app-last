@@ -1,5 +1,13 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React, { useMemo, useState } from "react";
+import {
+  Modal,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import React, { useMemo, useRef, useState } from "react";
 import { Notam } from "@/hooks/interface/notam";
 import { Colors } from "@/constants/color";
 import { useLanguage } from "@/context/LanguageContext";
@@ -7,17 +15,23 @@ import { NOTAM_TEXT } from "@/constants/notam";
 import { RenderHTML } from "react-native-render-html";
 import { useResponsiveSize } from "@/hooks/useResponsiveSize";
 import { Ionicons } from "@expo/vector-icons";
+import WebView from "react-native-webview";
 
 const NotamCard = ({ item }: { item: Notam }) => {
-  const { width } = useResponsiveSize();
+  const { width, height } = useResponsiveSize();
   const { language } = useLanguage();
   const [showPlain, setShowPlainTes] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
   // 📌 HTML source-г useMemo ашиглаж тогтвортой хадгалах
   const htmlSource = useMemo(
     () => ({ html: item.description }),
     [item.description]
   );
+  // Android-д URL-ийг encode хийх шаардлагатай
+  const androidUrl = `https://docs.google.com/viewerng/viewer?embedded=true&url=${encodeURIComponent(
+    item.d_notam_link
+  )}`;
   return (
     <View style={styles.card}>
       <View style={styles.titleRow}>
@@ -60,7 +74,10 @@ const NotamCard = ({ item }: { item: Notam }) => {
           </Text>
         </TouchableOpacity>
         {item.d_notam !== "" && (
-          <TouchableOpacity style={styles.toggleButton}>
+          <TouchableOpacity
+            style={styles.toggleButton}
+            onPress={() => setModalVisible(true)}
+          >
             <Text>{item.d_notam.toUpperCase()}</Text>
           </TouchableOpacity>
         )}
@@ -85,6 +102,47 @@ const NotamCard = ({ item }: { item: Notam }) => {
           />
         )}
       </View>
+      <Modal
+        visible={modalVisible}
+        transparent
+        animationType="slide"
+        statusBarTranslucent
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { width, height: height * 0.7 }]}>
+            <View style={styles.modalHeader}>
+              <Text style={{ fontWeight: "600" }}>{item.number}</Text>
+              <Text style={{ fontWeight: "600", color: Colors.primary }}>
+                {item.d_notam.toUpperCase()}
+              </Text>
+              <Pressable onPress={() => setModalVisible(false)}>
+                <Text style={{ fontSize: 20 }}>✕</Text>
+              </Pressable>
+            </View>
+            {item.d_notam.toLowerCase() === "3D" ? (
+              <Text>3D notam orj irne</Text>
+            ) : item.d_notam.toUpperCase() === "2D" ? (
+              <WebView
+                style={{ flex: 1 }}
+                originWhitelist={["*"]}
+                source={{
+                  uri: Platform.OS === "ios" ? item.d_notam_link : androidUrl,
+                }}
+                javaScriptEnabled
+                domStorageEnabled
+                startInLoadingState
+                scalesPageToFit={true} // zoom тохируулах
+                useWebKit={true} // iOS-д webkit ашиглах
+                Android-д
+                zoom
+                control
+                тохиргоо
+                androidHardwareAccelerationDisabled={false}
+              />
+            ) : null}
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -141,5 +199,26 @@ const styles = StyleSheet.create({
     borderTopWidth: 2,
     borderStyle: "dashed",
     borderColor: "#BAB9B9",
+  },
+  // MODAL
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.3)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    // width: Sizes.width,
+    // height: Sizes.height * 0.7,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    overflow: "hidden",
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 15,
+    borderBottomWidth: 1,
+    borderColor: "#ccc",
   },
 });
