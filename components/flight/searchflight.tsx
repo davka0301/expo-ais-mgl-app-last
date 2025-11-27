@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     top: 100,
     alignSelf: "center",
     alignItems: "center",
-    shadowColor: "#d9d9d9", // Улаан өнгө
+    shadowColor: "#d9d9d9",
     shadowOffset: {
       width: 0,
       height: 15,

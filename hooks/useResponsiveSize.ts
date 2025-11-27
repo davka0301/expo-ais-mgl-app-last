@@ -16,9 +16,12 @@ export function useResponsiveSize() {
 
   const headerTop = height * 0.15;
 
+  const headerNotamTop = height * 0.2;
+
   return {
     width,
     height,
     headerTop,
+    headerNotamTop,
   };
 }

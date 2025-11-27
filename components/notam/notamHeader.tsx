@@ -1,69 +1,98 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  FlatList,
+  Image,
+  ImageBackground,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 // import { useNotamWishlist } from "@/constants/notamBookMart";
 import { useLanguage } from "@/context/LanguageContext";
+import { useResponsiveSize } from "@/hooks/useResponsiveSize";
+import { Colors } from "@/constants/color";
+import { NotamCat } from "@/hooks/interface/notamCat";
+interface Props {
+  onSeries: NotamCat[];
+  selectedSerie: string;
+  onSelectSerie: (code: string) => void;
+}
 
-const NotamHeader = ({
-  series,
-  setSeries,
-}: {
-  series: "a" | "c";
-  setSeries: (value: "a" | "c") => void;
-}) => {
+const NotamHeader = ({ onSeries, selectedSerie, onSelectSerie }: Props) => {
   const { language, toggleLanguage } = useLanguage();
   const router = useRouter();
-  // const { wishlist } = useNotamWishlist();
+
+  const { width, headerNotamTop } = useResponsiveSize();
   return (
     <View style={styles.header}>
-      <View style={styles.topRow}>
-        <Image
-          source={require("@/assets/images/ais.png")}
-          style={styles.aisLogo}
-        />
-        <View style={styles.rightIcons}>
-          <TouchableOpacity
-            style={styles.langCircle}
-            onPress={() => router.push("/notam/bookmark")}
-          >
-            <Ionicons name="bookmarks-outline" size={18} />
-            {/* COUNT BADGE */}
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.langCircle} onPress={toggleLanguage}>
-            <Text style={{ fontWeight: "600" }}>{language}</Text>
-          </TouchableOpacity>
+      <ImageBackground
+        source={require("@/assets/images/notam.jpg")}
+        style={[styles.bg, { width, height: headerNotamTop }]}
+        resizeMode="stretch"
+      >
+        <View style={styles.topRow}>
+          <Image
+            source={require("@/assets/images/ais.png")}
+            style={styles.aisLogo}
+          />
+          <View style={styles.rightIcons}>
+            <TouchableOpacity
+              style={styles.langCircle}
+              onPress={() => router.push("/notam/bookmark")}
+            >
+              <Ionicons
+                name="bookmarks-outline"
+                size={18}
+                color={Colors.white}
+              />
+              {/* COUNT BADGE */}
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.langCircle}
+              onPress={toggleLanguage}
+            >
+              <Text style={{ fontWeight: "600", color: Colors.text_white }}>
+                {language}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-      {/* SERIES */}
-      <View style={styles.segmentContainer}>
-        <TouchableOpacity
-          style={[styles.segment, series === "a" && styles.activeSegment]}
-          onPress={() => setSeries("a")}
-        >
-          <Text
-            style={[
-              styles.segmentText,
-              series === "a" && styles.activeSegmentText,
-            ]}
-          >
-            A SERIES
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.segment, series === "c" && styles.activeSegment]}
-          onPress={() => setSeries("c")}
-        >
-          <Text
-            style={[
-              styles.segmentText,
-              series === "c" && styles.activeSegmentText,
-            ]}
-          >
-            C SERIES
-          </Text>
-        </TouchableOpacity>
-      </View>
+
+        {/* SERIES */}
+        <View style={styles.seriesWrapper}>
+          <FlatList
+            horizontal
+            data={onSeries}
+            keyExtractor={(item) => item.cat_code}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.seriesContainer}
+            renderItem={({ item }) => {
+              const isActive = item.cat_code === selectedSerie;
+              return (
+                <TouchableOpacity
+                  style={[
+                    styles.seriesItem,
+                    isActive ? styles.seriesActive : styles.series,
+                  ]}
+                  onPress={() => onSelectSerie(item.cat_code)}
+                >
+                  <Text
+                    style={[
+                      styles.seriesText,
+                      isActive && styles.seriesTextActive,
+                    ]}
+                  >
+                    {language === "EN" ? item.cat_name_en : item.cat_name}
+                  </Text>
+                </TouchableOpacity>
+              );
+            }}
+          />
+        </View>
+      </ImageBackground>
     </View>
   );
 };
@@ -72,10 +101,11 @@ export default NotamHeader;
 
 const styles = StyleSheet.create({
   header: {
-    justifyContent: "flex-start",
-    backgroundColor: "#C2C2C2",
+    alignSelf: "center",
     width: "100%",
-    height: 150,
+  },
+  bg: {
+    justifyContent: "flex-start",
   },
   topRow: {
     flexDirection: "row",
@@ -87,51 +117,54 @@ const styles = StyleSheet.create({
   aisLogo: {
     width: 50,
     aspectRatio: 1273 / 615,
-    height: undefined,
-  },
-  date: {
-    fontSize: 16,
   },
   rightIcons: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
   },
+
   langCircle: {
-    backgroundColor: "#fff",
+    backgroundColor: Colors.primary,
     borderRadius: 30,
     paddingHorizontal: 10,
     paddingVertical: 4,
     elevation: 2,
   },
 
-  segmentContainer: {
-    flexDirection: "row",
-    backgroundColor: "#fff",
-    marginHorizontal: 20,
-    marginVertical: 8,
-    borderRadius: 8,
-    overflow: "hidden",
-  },
-  segment: {
-    flex: 1,
-    paddingVertical: 10,
-    justifyContent: "center",
+  // SERIEs
+  seriesWrapper: {
+    width: "100%",
     alignItems: "center",
-  },
-  activeSegment: {
-    backgroundColor: "#000",
-    margin: 5,
-    borderRadius: 8,
-  },
-  segmentText: {
-    color: "#000",
-    fontWeight: "bold",
-  },
-  activeSegmentText: {
-    color: "#fff",
+    marginTop: 60,
   },
 
+  seriesContainer: {
+    width: "80%", // дэлгэцийн 75%
+    justifyContent: "space-evenly",
+  },
+
+  seriesItem: {
+    paddingVertical: 8,
+    paddingHorizontal: 50,
+    borderRadius: 10,
+    backgroundColor: "transparent",
+  },
+  series: {
+    backgroundColor: Colors.grey,
+  },
+  seriesActive: {
+    backgroundColor: Colors.primary,
+  },
+
+  seriesText: {
+    color: Colors.text_dark,
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  seriesTextActive: {
+    color: "#fff",
+  },
   // NOTAM BADGE
   badge: {
     position: "absolute",
