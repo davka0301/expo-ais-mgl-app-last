@@ -68,7 +68,7 @@ const AipSearch = (props: any) => {
           {selectedTab === "AIP" &&
             Object.entries(DATASETS).map(([datasetKey, arr]) =>
               arr.map((section) => (
-                <View>
+                <View key={`section-${datasetKey}-${section.group_id}`}>
                   {/* one level */}
                   <TouchableOpacity
                     key={`${datasetKey}-${section.group_id}`}
@@ -92,7 +92,7 @@ const AipSearch = (props: any) => {
                   {/* two level */}
                   {expanded[section.group_name_en] &&
                     section.groups.map((g) => (
-                      <View>
+                      <View key={`group-${g.code}`}>
                         <TouchableOpacity
                           key={g.code}
                           style={styles.twoSection}
