@@ -1,8 +1,14 @@
 import FlightHeader from "@/components/flight/flightHeader";
 import { useLanguage } from "@/context/LanguageContext";
 import { StatusBar } from "expo-status-bar";
-import React, { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { Button, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useAirport } from "@/hooks/useAirportData";
 import SearchBy from "@/components/flight/searchBy";
 import Searchflight from "@/components/flight/searchflight";
@@ -13,11 +19,9 @@ const Flight = () => {
   const today = moment().format("DD-MMM-YYYY");
   const [selAirport, setSelAirport] = useState("ZMCK");
   const { airport, loading } = useAirport(selAirport);
+
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.contentContainer}
-    >
+    <View style={styles.container}>
       <StatusBar style="dark" />
       <FlightHeader />
       <Searchflight
@@ -27,7 +31,7 @@ const Flight = () => {
         onSelectAirport={(code) => setSelAirport(code)}
       />
       <SearchBy />
-    </ScrollView>
+    </View>
   );
 };
 
@@ -38,8 +42,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.white,
   },
-  contentContainer: {
-    // ScrollView-н контентийн доод талд зай үүсгэхэд ашигтай.
-    paddingBottom: 200,
+  //
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  text: {
+    fontSize: 16,
+    marginBottom: 20,
+    textAlign: "center",
   },
 });

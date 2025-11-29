@@ -2,7 +2,7 @@ export const Colors = {
   dark: "#000",
   primary: "#00abff",
   secondary: "#333333",
-  grey: "#d9d9d9d9",
+  grey: "#d9d9d9",
   white: "#fff",
   tabInactive: "gray",
   text_dark: "#000",
