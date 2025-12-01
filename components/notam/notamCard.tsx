@@ -16,12 +16,15 @@ import { RenderHTML } from "react-native-render-html";
 import { useResponsiveSize } from "@/hooks/useResponsiveSize";
 import { Ionicons } from "@expo/vector-icons";
 import WebView from "react-native-webview";
+import { useNotamWishlist } from "@/constants/bookMart/notamBookMart";
 
 const NotamCard = ({ item }: { item: Notam }) => {
   const { width, height } = useResponsiveSize();
   const { language } = useLanguage();
   const [showPlain, setShowPlainTes] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const { wishlist, addToWishlist, removeFromWishlist } = useNotamWishlist();
+  const isBookmarked = wishlist.some((w) => w.number === item.number);
 
   // 📌 HTML source-г useMemo ашиглаж тогтвортой хадгалах
   const htmlSource = useMemo(
@@ -82,8 +85,21 @@ const NotamCard = ({ item }: { item: Notam }) => {
           </TouchableOpacity>
         )}
 
-        <TouchableOpacity style={styles.toggleButton}>
-          <Ionicons name={"bookmark-outline"} size={19} color={"#000"} />
+        <TouchableOpacity
+          style={styles.toggleButton}
+          onPress={() => {
+            if (isBookmarked) {
+              removeFromWishlist(item.number);
+            } else {
+              addToWishlist(item);
+            }
+          }}
+        >
+          <Ionicons
+            name={isBookmarked ? "bookmark" : "bookmark-outline"}
+            size={19}
+            color={isBookmarked ? "red" : "#000"}
+          />
         </TouchableOpacity>
       </View>
 

@@ -1,16 +1,9 @@
 import FlightHeader from "@/components/flight/flightHeader";
-import { useLanguage } from "@/context/LanguageContext";
 import { StatusBar } from "expo-status-bar";
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { Button, ScrollView, StyleSheet, Text, View } from "react-native";
+import React, { useState } from "react";
+import { StyleSheet, View } from "react-native";
 import { useAirport } from "@/hooks/useAirportData";
-import SearchBy from "@/components/flight/searchBy";
+import SearchBy from "@/components/flight/searchBy/searchBy";
 import Searchflight from "@/components/flight/searchflight";
 import { Colors } from "@/constants/color";
 import moment from "moment";

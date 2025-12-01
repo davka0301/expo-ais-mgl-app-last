@@ -15,6 +15,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { useResponsiveSize } from "@/hooks/useResponsiveSize";
 import { Colors } from "@/constants/color";
 import { NotamCat } from "@/hooks/interface/notamCat";
+import { useNotamWishlist } from "@/constants/bookMart/notamBookMart";
 interface Props {
   onSeries: NotamCat[];
   selectedSerie: string;
@@ -24,6 +25,7 @@ interface Props {
 const NotamHeader = ({ onSeries, selectedSerie, onSelectSerie }: Props) => {
   const { language, toggleLanguage } = useLanguage();
   const router = useRouter();
+  const { wishlist } = useNotamWishlist();
 
   const { width, headerNotamTop } = useResponsiveSize();
   return (
@@ -49,6 +51,11 @@ const NotamHeader = ({ onSeries, selectedSerie, onSelectSerie }: Props) => {
                 color={Colors.white}
               />
               {/* COUNT BADGE */}
+              {wishlist.length > 0 && (
+                <View style={styles.badge}>
+                  <Text style={styles.badgeText}>{wishlist.length}</Text>
+                </View>
+              )}
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.langCircle}

@@ -21,10 +21,6 @@ export const useAllFlight = (
       const res = await axios.get(url);
 
       let flights = res.data || [];
-      console.log("------date--", date);
-      console.log("------airport--", airport);
-      console.log("------query--", query);
-      console.log("------filter--", filter); // ⬅️ ИНГЭЖ ХЭВЛЭНЭ
 
       // ХАЙЛТ — company, dep_ad_en, dep_location_en
       if (query && query.trim().length > 0) {

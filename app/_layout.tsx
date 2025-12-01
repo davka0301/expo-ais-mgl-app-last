@@ -4,6 +4,7 @@ import { useFonts } from "expo-font";
 import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import { NotamWishlistProvider } from "@/constants/bookMart/notamBookMart";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -28,20 +29,22 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <BottomSheetModalProvider>
         <LanguageProvider>
-          <Stack initialRouteName="index">
-            <Stack.Screen
-              name="index"
-              options={{
-                headerShown: false,
-              }}
-            />
-            <Stack.Screen
-              name="(tabs)"
-              options={{
-                headerShown: false,
-              }}
-            />
-          </Stack>
+          <NotamWishlistProvider>
+            <Stack initialRouteName="index">
+              <Stack.Screen
+                name="index"
+                options={{
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="(tabs)"
+                options={{
+                  headerShown: false,
+                }}
+              />
+            </Stack>
+          </NotamWishlistProvider>
         </LanguageProvider>
       </BottomSheetModalProvider>
     </GestureHandlerRootView>
