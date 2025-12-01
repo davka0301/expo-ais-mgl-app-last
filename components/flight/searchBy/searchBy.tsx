@@ -8,23 +8,29 @@ import {
   BottomSheetModal,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
-import { ModalType } from "./typesSearch";
 import { Colors } from "@/constants/color";
 import FlightNumber from "./bottomSheet/flightNumber";
 import Airline from "./bottomSheet/airline";
 import Route from "./bottomSheet/route";
 import DateSelect from "./bottomSheet/dateSelect";
 
-const SearchBy = () => {
+type ModalType = "1" | "2" | "3" | "4" | null;
+
+const SearchBy = ({ selectedAirport }: { selectedAirport: string }) => {
   const router = useRouter();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const snapPoints = useMemo(() => ["60%", "80%"], []);
   const [modalType, setModalType] = useState<ModalType>(null);
-  const [modalData, setModalData] = useState<any>(null); // 🔥 Шинэ state
+  const [modalData, setModalData] = useState<any>(null);
 
   // dates
   const today = new Date().toISOString().split("T")[0];
   const [selectedDates, setSelectedDates] = useState<string[]>([today]);
+
+  // reset dates
+  const resetDates = () => {
+    setSelectedDates([today]);
+  };
 
   const onDayPress = useCallback((day: any) => {
     const date = day.dateString;
@@ -42,11 +48,14 @@ const SearchBy = () => {
     return m;
   }, [selectedDates]);
 
-  const openSheet = useCallback((item: any) => {
-    setModalType(item.id);
-    setModalData(item); // 🔥 icon, title, subtitle бүгд энд
-    bottomSheetRef.current?.present();
-  }, []);
+  const openSheet = useCallback(
+    (item: any) => {
+      setModalType(item.id);
+      setModalData({ ...item, airportCode: selectedAirport }); // 🔥 icon, title, subtitle бүгд энд
+      bottomSheetRef.current?.present();
+    },
+    [selectedAirport]
+  );
 
   const renderBackdrop = useCallback(
     (props: any) => (
@@ -65,18 +74,19 @@ const SearchBy = () => {
       icon: modalData?.icon,
       title: modalData?.name_title,
       subtitle: modalData?.sub_title,
-      onCancel: () => bottomSheetRef.current?.close(),
-      onNext: handleNextFromModal,
+      onCancel: () => {
+        bottomSheetRef.current?.close(), resetDates();
+      },
     };
     switch (modalType) {
       case "1":
-        return <FlightNumber {...commonProps} />;
+        return <FlightNumber {...commonProps} onNext={handleNextFromModal} />;
 
       case "2":
-        return <Airline {...commonProps} />;
+        return <Airline {...commonProps} onNext={handleNextFromModal} />;
 
       case "3":
-        return <Route {...commonProps} />;
+        return <Route {...commonProps} onNext={handleNextFromModal} />;
 
       case "4":
         return (
@@ -85,6 +95,7 @@ const SearchBy = () => {
             selectedDates={selectedDates}
             onDayPress={onDayPress}
             marked={marked}
+            onNext={handleNextDate}
           />
         );
 
@@ -93,11 +104,21 @@ const SearchBy = () => {
     }
   };
 
-  const handleNextFromModal = (payload?: any) => {
-    // close and navigate with params as needed
+  const handleNextDate = () => {
     bottomSheetRef.current?.close();
     router.push({
-      pathname: "/flight/searchBy/searchBy",
+      pathname: "/flight/searchBy/searchByDate",
+      params: {
+        dates: JSON.stringify(selectedDates),
+        airportCode: modalData?.airportCode,
+      },
+    });
+    resetDates();
+  };
+  const handleNextFromModal = (payload?: any) => {
+    bottomSheetRef.current?.close();
+    router.push({
+      pathname: "/flight/searchBy/searchByFlightNumber",
       params: { route: payload },
     });
   };

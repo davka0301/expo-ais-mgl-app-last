@@ -5,7 +5,7 @@ import { Colors } from "@/constants/color";
 
 interface Props {
   onCancel: () => void;
-  onNext: (value?: string[]) => void;
+  onNext: (value?: any) => void;
   selectedDates: string[];
   onDayPress: (day: any) => void;
   marked: any;

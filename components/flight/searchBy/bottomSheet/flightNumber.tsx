@@ -9,7 +9,6 @@ import {
 import React from "react";
 import { Props } from "@/hooks/interface/bottomSheet";
 import { Colors } from "@/constants/color";
-import { Ionicons } from "@expo/vector-icons";
 
 const FlightNumber = ({ icon, title, subtitle, onCancel, onNext }: Props) => {
   const [value, setValue] = React.useState("");

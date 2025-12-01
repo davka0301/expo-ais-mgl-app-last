@@ -12,7 +12,6 @@ const Flight = () => {
   const today = moment().format("DD-MMM-YYYY");
   const [selAirport, setSelAirport] = useState("ZMCK");
   const { airport, loading } = useAirport(selAirport);
-
   return (
     <View style={styles.container}>
       <StatusBar style="dark" />
@@ -23,7 +22,7 @@ const Flight = () => {
         selectedAirport={selAirport}
         onSelectAirport={(code) => setSelAirport(code)}
       />
-      <SearchBy />
+      <SearchBy selectedAirport={selAirport} />
     </View>
   );
 };
