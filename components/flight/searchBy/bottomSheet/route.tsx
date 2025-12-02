@@ -13,6 +13,8 @@ const Route = ({ icon, title, subtitle, onCancel, onNext }: Props) => {
           <Text style={styles.subtitle}>{subtitle}</Text>
         </View>
       </View>
+
+      <Text>Direction neer haih bolomjtoi balgah</Text>
     </View>
   );
 };

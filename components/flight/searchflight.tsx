@@ -15,6 +15,7 @@ import { useResponsiveSize } from "@/hooks/useResponsiveSize";
 import { AirportProps } from "@/hooks/interface/airport";
 import { useRouter } from "expo-router";
 import { SEARCH_FILTER } from "@/constants/searchFilter";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface Props {
   today: string;
@@ -32,6 +33,7 @@ const Searchflight = ({
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState("1");
+  const { language } = useLanguage();
 
   const { width } = useResponsiveSize();
   const CARD_WIDTH = width * 0.95;
@@ -101,15 +103,15 @@ const Searchflight = ({
           <Text
             style={{ fontSize: 18, fontFamily: "Bold", textAlign: "center" }}
           >
-            Search for Flights
+            {language === "EN" ? "Search for Flights" : "Нислэг хайх"}
           </Text>
           <View style={styles.inputWrapper}>
             <TextInput
               style={styles.input}
-              placeholder={"Enter here"}
+              placeholder={language === "EN" ? "Enter here" : "Хайлт"}
               value={search}
               onChangeText={setSearch}
-              placeholderTextColor="#A9A9A9" // Саарал өнгө
+              placeholderTextColor="#A9A9A9"
             />
           </View>
 
@@ -138,14 +140,18 @@ const Searchflight = ({
                       { color: isActive ? Colors.white : Colors.text_grey },
                     ]}
                   >
-                    {item.airport_name_en}
+                    {language === "EN"
+                      ? item.airport_name_en
+                      : item.airport_name}
                   </Text>
                 </TouchableOpacity>
               );
             }}
           />
           <View style={styles.filter}>
-            <Text style={styles.filterLabel}>Filters</Text>
+            <Text style={styles.filterLabel}>
+              {language === "EN" ? "Filters" : "Шүүлтүүр"}
+            </Text>
 
             <Text style={styles.filterLabel}>{today.toUpperCase()}</Text>
           </View>
@@ -176,7 +182,7 @@ const Searchflight = ({
                         : { color: Colors.text_grey },
                     ]}
                   >
-                    {chip.name}
+                    {language === "EN" ? chip.name : chip.name_mn}
                   </Text>
                 </TouchableOpacity>
               );
@@ -185,7 +191,9 @@ const Searchflight = ({
 
           {/* SEARCH BUTTON */}
           <TouchableOpacity style={styles.searchBtn} onPress={handleSearch}>
-            <Text style={styles.searchBtnText}>Search</Text>
+            <Text style={styles.searchBtnText}>
+              {language === "EN" ? "Search" : "Хайх"}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
