@@ -4,4 +4,4 @@ export interface Props {
   subtitle: string;
   onCancel: () => void;
   onNext: (value?: any) => void;
-  }
+}

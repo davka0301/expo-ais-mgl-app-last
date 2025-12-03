@@ -17,7 +17,7 @@ export const SEARCH_BY = [
   },
   {
     id: "3",
-    name_title: "Route",
+    name_title: "Direction",
     name_title_mn: "Чиглэл",
     sub_title: "Enter flight code to get flight details",
     sub_title_mn: "энэ нислэгийн дугаар хайх л хийх талбар",

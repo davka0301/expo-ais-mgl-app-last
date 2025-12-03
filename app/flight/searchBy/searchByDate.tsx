@@ -1,102 +1,102 @@
-// app/flight/searchBy/searchByDate.tsx
-import React from "react";
+import { useAllFlightDate } from "@/hooks/useAllFlightDate";
 import { useLocalSearchParams } from "expo-router";
+import moment from "moment";
+import React from "react";
 import {
-  View,
-  Text,
   ActivityIndicator,
   ScrollView,
   StyleSheet,
-  Image,
-  TouchableOpacity,
+  Text,
+  View,
 } from "react-native";
-import moment from "moment";
-import { useAllFlightDate } from "@/hooks/useAllFlightDate";
-import { AllFlightProps } from "@/hooks/interface/allFlight";
-import { Colors } from "@/constants/color";
 
-export default function SearchByDate() {
+export default function Flight() {
   const params = useLocalSearchParams();
 
-  // params.dates нь JSON.stringify(selectedDates) гэж дамжуулсан тул эндээс авна
+  // Params parse
   const rawDates = Array.isArray(params.dates) ? params.dates[0] : params.dates;
   const dates: string[] = rawDates ? JSON.parse(rawDates) : [];
 
-  const airport = params.airportCode;
+  const airport = Array.isArray(params.airportCode)
+    ? params.airportCode[0]
+    : params.airportCode ?? "";
+
+  const { data, loading } = useAllFlightDate(dates, airport);
+
+  // ⬇️ Date-үүдийг бага → их рүү эрэмбэлэх
+  const sortedData = [...data].sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
+
+  // Нийт flight тоо
+  const totalFlights = data.reduce((sum, d) => sum + d.flights.length, 0);
+
+  if (loading || data.length !== dates.length) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" color={"red"} />
+      </View>
+    );
+  }
 
   return (
-    <ScrollView style={{ padding: 20 }}>
-      <Text style={{ fontSize: 16, fontWeight: "bold" }}>
-        ✈ Airport: {airport}
-      </Text>
-      <Text style={{ fontSize: 18, fontWeight: "bold", marginBottom: 10 }}>
-        Сонгогдсон Огноонууд
-      </Text>
+    <ScrollView style={styles.container}>
+      {/* Summary */}
+      <View style={styles.summaryBox}>
+        <Text style={styles.summaryText}>Selected Days: {data.length}</Text>
+        <Text style={styles.summaryText}>Total Flights: {totalFlights}</Text>
+      </View>
+      {/* Day-by-day flights */}
+      {sortedData.map((group) => (
+        <View key={group.date} style={styles.card}>
+          <Text style={styles.dateText}>
+            {moment(group.date).format("DD-MMM-YYYY")} — {group.flights.length}{" "}
+            flights
+          </Text>
 
-      {dates.length === 0 ? (
-        <Text>No dates selected</Text>
-      ) : (
-        dates.map((date, idx) => (
-          <DateFlight
-            key={`${date}-${idx}`}
-            date={date}
-            airport={airport as string}
-          />
-        ))
-      )}
+          {group.flights.map((f, i) => (
+            <View key={i} style={styles.item}>
+              <Text style={styles.flightText}>
+                {f.company_abbr} — {f.dep_location} → {f.arr_location}
+              </Text>
+              <Text style={styles.timeText}>
+                {f.takeoff_time} → {f.landing_time}
+              </Text>
+            </View>
+          ))}
+        </View>
+      ))}
     </ScrollView>
   );
 }
 
-const DateFlight: React.FC<{ date: string; airport: string }> = ({
-  date,
-  airport,
-}) => {
-  const apiDate = moment(date, "YYYY-MM-DD")
-    .format("DD-MMM-YYYY")
-    .toUpperCase();
-  const { data, loading } = useAllFlightDate(apiDate, airport);
-
-  const sortedData = React.useMemo(() => {
-    if (!data) return [];
-    return [...data].sort((a) => {
-      const aNum = parseInt(a.iata?.replace(/\D/g, ""));
-      return aNum;
-    });
-  }, [data]);
-  return (
-    <View style={{ marginBottom: 20 }}>
-      <Text style={{ fontSize: 16, fontWeight: "600", marginBottom: 5 }}>
-        📅 {moment(date).format("YYYY-MM-DD")} —{" "}
-        {loading ? "Loading..." : `${data.length} flights`}
-      </Text>
-
-      {loading ? (
-        <ActivityIndicator size="small" />
-      ) : data.length === 0 ? (
-        <Text>No flights found</Text>
-      ) : (
-        sortedData.map((flight: AllFlightProps) => {
-          return (
-            <TouchableOpacity>
-              <Text>
-                • {flight.iata} → {flight.dep_ad_en} — {flight.arr_ad_en}
-              </Text>
-            </TouchableOpacity>
-          );
-        })
-      )}
-    </View>
-  );
-};
-
 const styles = StyleSheet.create({
-  card: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.dark,
-    borderStyle: "dashed",
-    marginBottom: 8,
+  container: { padding: 12 },
+  center: { flex: 1, justifyContent: "center", alignItems: "center" },
+
+  summaryBox: {
+    backgroundColor: "#e5e7eb",
+    padding: 12,
+    borderRadius: 10,
+    marginBottom: 16,
   },
+  summaryText: { fontSize: 16, fontWeight: "600" },
+
+  card: {
+    padding: 12,
+    marginBottom: 16,
+    borderRadius: 12,
+    backgroundColor: "#f9fafb",
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+  },
+  dateText: { fontSize: 17, fontWeight: "700", marginBottom: 10, color: "red" },
+
+  item: {
+    paddingVertical: 6,
+    borderBottomWidth: 0.5,
+    borderColor: "#d1d5db",
+  },
+  flightText: { fontSize: 15, fontWeight: "500" },
+  timeText: { fontSize: 14, color: "#6b7280" },
 });

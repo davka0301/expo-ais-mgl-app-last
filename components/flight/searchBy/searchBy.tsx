@@ -11,8 +11,8 @@ import {
 import { Colors } from "@/constants/color";
 import FlightNumber from "./bottomSheet/flightNumber";
 import Airline from "./bottomSheet/airline";
-import Route from "./bottomSheet/route";
 import DateSelect from "./bottomSheet/dateSelect";
+import DirectionDate from "./bottomSheet/direction/directionDate";
 
 type ModalType = "1" | "2" | "3" | "4" | null;
 
@@ -86,7 +86,13 @@ const SearchBy = ({ selectedAirport }: { selectedAirport: string }) => {
         return <Airline {...commonProps} onNext={handleNextFromModal} />;
 
       case "3":
-        return <Route {...commonProps} onNext={handleNextFromModal} />;
+        return (
+          <DirectionDate
+            {...commonProps}
+            airportCode={modalData?.airportCode}
+            onNext={handleNextDirection}
+          />
+        );
 
       case "4":
         return (
@@ -122,6 +128,21 @@ const SearchBy = ({ selectedAirport }: { selectedAirport: string }) => {
       params: { route: payload },
     });
   };
+  const handleNextDirection = (payload: {
+    date: string;
+    airportCode: string;
+    directionCode: string;
+  }) => {
+    bottomSheetRef.current?.close();
+    router.push({
+      pathname: "/flight/searchBy/searchByDirection",
+      params: {
+        date: payload.date,
+        airportCode: payload.airportCode,
+        directionCode: payload.directionCode,
+      },
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -154,7 +175,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 20,
-    marginTop: 10,
   },
   headerText: {
     fontSize: 18,

@@ -104,6 +104,12 @@ export default function RootLayout() {
                     ) : null,
                 }}
               />
+              <Stack.Screen
+                name="flight/searchBy/searchByDirection"
+                options={{
+                  headerShown: false,
+                }}
+              />
             </Stack>
           </NotamWishlistProvider>
         </LanguageProvider>
