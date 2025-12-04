@@ -144,6 +144,14 @@ const Searchflight = ({
                       ? item.airport_name_en
                       : item.airport_name}
                   </Text>
+                  <Text
+                    style={{
+                      fontSize: 8,
+                      color: isActive ? Colors.white : Colors.text_grey,
+                    }}
+                  >
+                    ОЛОН УЛСЫН НИСЭХ БУУДАЛ
+                  </Text>
                 </TouchableOpacity>
               );
             }}

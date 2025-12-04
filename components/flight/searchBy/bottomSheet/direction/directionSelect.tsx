@@ -112,13 +112,13 @@ const DirectionSelect = ({
         </TouchableOpacity>
         <TouchableOpacity
           style={{ padding: 10, backgroundColor: Colors.primary }}
-          onPress={() => {
-            if (selected) {
-              onNext(selected);
-            } else {
-              alert("Please select a direction");
-            }
-          }}
+          // onPress={() => {
+          //   if (selected) {
+          //     onNext(selected);
+          //   } else {
+          //     alert("Please select a direction"); 94192944
+          //   }
+          // }}
         >
           <Text style={{ color: Colors.text_white }}>Next</Text>
         </TouchableOpacity>

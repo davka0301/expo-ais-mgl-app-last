@@ -26,8 +26,8 @@ const SearchByItem = ({
   return (
     <TouchableOpacity
       style={styles.container}
-      onPress={onPress}
       activeOpacity={0.8}
+      onPress={onPress}
     >
       <View style={styles.leftRow}>
         <Image source={iconName} style={styles.icon} />
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   leftRow: { flexDirection: "row", alignItems: "center" },
-  icon: { width: 20, height: 20 },
+  icon: { width: 30, height: 30, margin: 10 },
   title: { fontSize: 15, fontWeight: "600" },
   subtitle: { fontSize: 12, color: Colors.text_grey },
 });

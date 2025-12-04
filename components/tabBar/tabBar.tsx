@@ -1,17 +1,8 @@
-import {
-  Dimensions,
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  TouchableOpacity,
-} from "react-native";
-import React, { useContext } from "react";
+import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import React from "react";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { TAB_IMAGES } from "@/constants/tabBar";
-import { LanguageContext } from "@/context/LanguageContext";
-
-const { width } = Dimensions.get("window");
+import { Colors } from "@/constants/color";
 
 const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
   return (
@@ -28,10 +19,10 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
 
         const iconName =
           route.name === "flight"
-            ? TAB_IMAGES.flight
+            ? TAB_IMAGES.flight_grey
             : route.name === "notam"
-            ? TAB_IMAGES.notam
-            : TAB_IMAGES.aip;
+            ? TAB_IMAGES.notam_grey
+            : TAB_IMAGES.aip_grey;
 
         const onPress = () => {
           const event = navigation.emit({
@@ -49,22 +40,25 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
           <TouchableOpacity
             key={route.key}
             onPress={onPress}
-            style={[styles.tabItem, isFocused && styles.activeTab]}
+            style={styles.tabItem}
           >
             <Image
               source={iconName}
               style={{
                 width: 25,
                 height: 25,
-                tintColor: isFocused ? "#fff" : "#333",
+                tintColor: isFocused ? Colors.primary : Colors.grey,
               }}
             />
 
-            {!isFocused && (
-              <Text style={[styles.tabText, { color: "#333" }]}>
-                {label as string}
-              </Text>
-            )}
+            <Text
+              style={[
+                styles.tabText,
+                { color: isFocused ? Colors.primary : Colors.grey },
+              ]}
+            >
+              {label as string}
+            </Text>
           </TouchableOpacity>
         );
       })}
@@ -78,14 +72,12 @@ const styles = StyleSheet.create({
   wrapper: {
     position: "absolute",
     bottom: 30,
-    left: 70,
-    right: 70,
     flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    backgroundColor: "#C2C2C2",
-    paddingVertical: 10,
-    borderRadius: 35,
+    justifyContent: "space-between",
+    alignSelf: "center",
+    backgroundColor: "blue",
+    borderRadius: 25,
+    paddingVertical: 8,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.1,
@@ -95,13 +87,7 @@ const styles = StyleSheet.create({
   tabItem: {
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 15,
-  },
-  activeTab: {
-    backgroundColor: "#2a9df4",
-    borderRadius: 25,
-    paddingVertical: 8,
-    paddingHorizontal: 15,
+    paddingHorizontal: 25,
   },
   tabText: {
     fontSize: 12,

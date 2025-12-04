@@ -1,147 +1,80 @@
-import { StyleSheet, Text, View } from "react-native";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import { Alert, StyleSheet, Text, View } from "react-native";
+import React, { useCallback, useRef, useState } from "react";
 import { SEARCH_BY } from "@/constants/searchBy";
 import SearchByItem from "./searchByItem";
-import { useRouter } from "expo-router";
-import {
-  BottomSheetBackdrop,
-  BottomSheetModal,
-  BottomSheetView,
-} from "@gorhom/bottom-sheet";
-import { Colors } from "@/constants/color";
-import FlightNumber from "./bottomSheet/flightNumber";
-import Airline from "./bottomSheet/airline";
-import DateSelect from "./bottomSheet/dateSelect";
-import DirectionDate from "./bottomSheet/direction/directionDate";
+import FlightNumber from "./bottomSheetModal/flightNumber";
+import AirLine from "./bottomSheetModal/airLine";
+import DateList from "./bottomSheetModal/dateList";
+import DirectionDate from "./bottomSheetModal/direction/directionDate";
+import DirectionSelect from "./bottomSheetModal/direction/directionSelect";
+type SearchItem = (typeof SEARCH_BY)[0];
 
-type ModalType = "1" | "2" | "3" | "4" | null;
+type ActiveModal = "1" | "2" | "3" | "4" | null;
 
+const initialState: SearchItem = {
+  id: "",
+  name_title: "",
+  name_title_mn: "",
+  sub_title: "",
+  sub_title_mn: "",
+  icon: "", // Use a default or null
+};
 const SearchBy = ({ selectedAirport }: { selectedAirport: string }) => {
-  const router = useRouter();
-  const bottomSheetRef = useRef<BottomSheetModal>(null);
-  const snapPoints = useMemo(() => ["60%"], []);
-  const [modalType, setModalType] = useState<ModalType>(null);
-  const [modalData, setModalData] = useState<any>(null);
+  const [activeModal, setActiveModal] = useState<ActiveModal>(null);
+  const [selectedItem, setSelectedItem] = useState<SearchItem>(initialState);
+  const [isDirectionListVisible, setIsDirectionListVisible] = useState(false);
+  const [selectedDirectionDate, setSelectedDirectionDate] =
+    useState<string>("");
 
-  // dates
-  const today = new Date().toISOString().split("T")[0];
-  const [selectedDates, setSelectedDates] = useState<string[]>([today]);
-
-  // reset dates
-  const resetDates = () => {
-    setSelectedDates([today]);
-  };
-
-  const onDayPress = useCallback((day: any) => {
-    const date = day.dateString;
-    setSelectedDates((prev) => {
-      if (prev.includes(date)) return prev.filter((d) => d !== date);
-      return [...prev, date];
-    });
-  }, []);
-
-  const marked = useMemo(() => {
-    const m: any = {};
-    selectedDates.forEach((d) => {
-      m[d] = { selected: true, selectedColor: Colors.primary };
-    });
-    return m;
-  }, [selectedDates]);
-
-  const openSheet = useCallback(
-    (item: any) => {
-      setModalType(item.id);
-      setModalData({ ...item, airportCode: selectedAirport }); // 🔥 icon, title, subtitle бүгд энд
-      bottomSheetRef.current?.present();
-    },
-    [selectedAirport]
-  );
-
-  const renderBackdrop = useCallback(
-    (props: any) => (
-      <BottomSheetBackdrop
-        {...props}
-        disappearsOnIndex={-1}
-        appearsOnIndex={0}
-        pressBehavior="close"
-      />
-    ),
-    []
-  );
-
-  const renderSheetContent = () => {
-    const commonProps = {
-      icon: modalData?.icon,
-      title: modalData?.name_title,
-      subtitle: modalData?.sub_title,
-      onCancel: () => {
-        bottomSheetRef.current?.close(), resetDates();
-      },
-    };
-    switch (modalType) {
+  const handleItemPress = (item: SearchItem) => {
+    setSelectedItem(item);
+    switch (item.id) {
       case "1":
-        return <FlightNumber {...commonProps} onNext={handleNextFromModal} />;
-
+        setActiveModal("1");
+        break;
       case "2":
-        return <Airline {...commonProps} onNext={handleNextFromModal} />;
-
+        setActiveModal("2");
+        break;
       case "3":
-        return (
-          <DirectionDate
-            {...commonProps}
-            airportCode={modalData?.airportCode}
-            onNext={handleNextDirection}
-          />
-        );
-
+        setActiveModal("3");
+        break;
       case "4":
-        return (
-          <DateSelect
-            {...commonProps}
-            selectedDates={selectedDates}
-            onDayPress={onDayPress}
-            marked={marked}
-            onNext={handleNextDate}
-          />
-        );
-
+        setActiveModal("4");
+        break;
       default:
-        return null;
+        setActiveModal(null);
+        break;
     }
   };
 
-  const handleNextDate = () => {
-    bottomSheetRef.current?.close();
-    router.push({
-      pathname: "/flight/searchBy/searchByDate",
-      params: {
-        dates: JSON.stringify(selectedDates),
-        airportCode: modalData?.airportCode,
-      },
-    });
-    resetDates();
+  const handleCloseModal = () => {
+    setActiveModal(null);
+    setIsDirectionListVisible(false);
+    setSelectedItem(initialState);
   };
-  const handleNextFromModal = (payload?: any) => {
-    bottomSheetRef.current?.close();
-    router.push({
-      pathname: "/flight/searchBy/searchByFlightNumber",
-      params: { route: payload },
-    });
+
+  const handleFlight = (value: string) => {
+    handleCloseModal();
   };
-  const handleNextDirection = (payload: {
-    date: string;
-    airportCode: string;
-    directionCode: string;
-  }) => {
-    bottomSheetRef.current?.close();
-    router.push({
-      pathname: "/flight/searchBy/searchByDirection",
-      params: {
-        date: payload.date,
-        airportCode: payload.airportCode,
-        directionCode: payload.directionCode,
-      },
-    });
+
+  const handleAirLine = (value: string) => {
+    // Do something with the entered flight details
+    Alert.alert(`Entered ${selectedItem.name_title}`, `Value: ${value}`);
+    handleCloseModal();
+  };
+
+  const handleDate = (value: string) => {
+    // Do something with the entered flight details
+    Alert.alert(`Entered ${selectedItem.name_title}`, `Value: ${value}`);
+    handleCloseModal();
+  };
+  const handleDirection = (date: string) => {
+    // Do something with the entered flight details
+    // Alert.alert(`Entered ${selectedItem.name_title}`, `Value: ${value}`);
+    // handleCloseModal();
+    setSelectedDirectionDate(date); // 1. Сонгосон огноог хадгална
+    setIsDirectionListVisible(true);
+    setActiveModal(null);
   };
 
   return (
@@ -153,18 +86,43 @@ const SearchBy = ({ selectedAirport }: { selectedAirport: string }) => {
           iconName={item.icon}
           title={item.name_title}
           subtitle={item.sub_title}
-          onPress={() => openSheet(item)}
+          onPress={() => handleItemPress(item)}
         />
       ))}
 
-      <BottomSheetModal
-        ref={bottomSheetRef}
-        index={1}
-        snapPoints={snapPoints}
-        backdropComponent={renderBackdrop}
-      >
-        <BottomSheetView>{renderSheetContent()}</BottomSheetView>
-      </BottomSheetModal>
+      <FlightNumber
+        isVisible={activeModal === "1"}
+        onClose={handleCloseModal}
+        onNext={handleFlight}
+        itemData={selectedItem}
+      />
+
+      <AirLine
+        isVisible={activeModal === "2"}
+        onClose={handleCloseModal}
+        onNext={handleAirLine}
+        itemData={selectedItem}
+      />
+      <DirectionDate
+        isVisible={activeModal === "3"}
+        onClose={handleCloseModal}
+        onNext={handleDirection}
+        itemData={selectedItem}
+      />
+      <DirectionSelect
+        isVisible={isDirectionListVisible}
+        onClose={handleCloseModal}
+        itemData={selectedItem}
+        selectedAirport={selectedAirport}
+        date={selectedDirectionDate}
+      />
+      <DateList
+        isVisible={activeModal === "4"}
+        onClose={handleCloseModal}
+        onNext={handleDate}
+        itemData={selectedItem}
+        selectedAirport={selectedAirport}
+      />
     </View>
   );
 };
