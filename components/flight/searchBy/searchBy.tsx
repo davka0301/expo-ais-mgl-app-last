@@ -19,7 +19,7 @@ type ModalType = "1" | "2" | "3" | "4" | null;
 const SearchBy = ({ selectedAirport }: { selectedAirport: string }) => {
   const router = useRouter();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
-  const snapPoints = useMemo(() => ["60%", "80%"], []);
+  const snapPoints = useMemo(() => ["60%"], []);
   const [modalType, setModalType] = useState<ModalType>(null);
   const [modalData, setModalData] = useState<any>(null);
 

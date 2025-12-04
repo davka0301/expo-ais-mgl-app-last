@@ -69,7 +69,6 @@ const DirectionSelect = ({
           placeholderTextColor="#A9A9A9"
         />
       </View>
-
       <FlatList
         data={filteredData}
         keyExtractor={(item) => item.direction_code}
