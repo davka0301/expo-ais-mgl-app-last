@@ -74,13 +74,11 @@ const AipContent = () => {
           </View>
           <View style={styles.dateCard}>
             <Text style={styles.pubDate}>
-              {/* pub_date: {loading ? "loading..." : latestPubDate} */}
               {language === "EN"
                 ? `Effective Date: ${effDate}`
                 : `Хүчинтэй болсон огноо: ${effDate}`}
             </Text>
             <Text style={styles.pubDate}>
-              {/* pub_date: {loading ? "loading..." : latestPubDate} */}
               {language === "EN"
                 ? `Publication Date: ${pubDate}`
                 : `Хэвлэх өдөр: ${pubDate}`}
