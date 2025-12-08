@@ -66,6 +66,9 @@ const Searchflight = ({
   `;
   };
 
+  const resetDates = () => {
+    setSearch("");
+  };
   const handleSearch = () => {
     router.push({
       pathname: "/flight/searchFilter/searchFilter",
@@ -76,6 +79,7 @@ const Searchflight = ({
         filter: activeFilter,
       },
     });
+    resetDates();
   };
   return (
     <View style={[styles.header, { width: CARD_WIDTH }]}>

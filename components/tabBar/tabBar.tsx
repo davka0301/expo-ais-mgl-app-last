@@ -47,14 +47,14 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
               style={{
                 width: 25,
                 height: 25,
-                tintColor: isFocused ? Colors.primary : Colors.grey,
+                tintColor: isFocused ? Colors.primary : Colors.tab_grey,
               }}
             />
 
             <Text
               style={[
                 styles.tabText,
-                { color: isFocused ? Colors.primary : Colors.grey },
+                { color: isFocused ? Colors.primary : Colors.tab_grey },
               ]}
             >
               {label as string}
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignSelf: "center",
-    backgroundColor: "blue",
+    backgroundColor: "#f6f4f5",
     borderRadius: 25,
     paddingVertical: 8,
     shadowColor: "#000",

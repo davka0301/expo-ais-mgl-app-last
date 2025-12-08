@@ -10,9 +10,11 @@ import {
   ImageSourcePropType,
   Image,
   TextInput,
+  Alert,
 } from "react-native";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Colors } from "@/constants/color";
+import { useRouter } from "expo-router";
 
 const { height } = Dimensions.get("window");
 const SNAP_HEIGHT = height * 0.7; // Өндрийг Calendar-т тохируулан 70% болгоё
@@ -31,16 +33,24 @@ interface ModalProps {
   onClose: () => void;
   onNext: (date: string) => void;
   itemData: SearchItemData;
+  selectedAirport: string;
 }
 
 const FlightNumber: React.FC<ModalProps> = ({
   itemData,
   isVisible,
   onClose,
-  onNext,
+  selectedAirport,
+  // onNext,
 }) => {
+  const router = useRouter();
   const translateY = useRef(new Animated.Value(height)).current;
   const slideUpDuration = 300;
+  const [search, setSearch] = useState("");
+
+  const resetDates = () => {
+    setSearch("");
+  };
 
   const slideUp = useCallback(() => {
     Animated.timing(translateY, {
@@ -56,11 +66,14 @@ const FlightNumber: React.FC<ModalProps> = ({
       duration: slideUpDuration,
       useNativeDriver: true,
     }).start(onClose);
+    resetDates();
   }, [translateY, onClose]);
 
-  if (isVisible) {
-    slideUp();
-  }
+  useEffect(() => {
+    if (isVisible) {
+      slideUp();
+    }
+  }, [isVisible]);
 
   const panResponder = useRef(
     PanResponder.create({
@@ -84,6 +97,21 @@ const FlightNumber: React.FC<ModalProps> = ({
       },
     })
   ).current;
+
+  const nexTHandle = () => {
+    if (!search) {
+      Alert.alert("Анхааруулга", "Та нислэгийн дугаараа оруулна уу...");
+      return;
+    }
+    router.push({
+      pathname: "/flight/searchBy/searchByFlightNumber",
+      params: {
+        selectedAirport: selectedAirport,
+        search: search,
+      },
+    });
+    slideDown();
+  };
 
   return (
     <Modal
@@ -129,7 +157,9 @@ const FlightNumber: React.FC<ModalProps> = ({
           <View style={styles.inputWrapper}>
             <TextInput
               style={styles.input}
-              placeholder={"Flight Number Search"}
+              value={search}
+              onChangeText={setSearch}
+              placeholder={"OM123...."}
               placeholderTextColor="#A9A9A9"
             />
           </View>
@@ -139,7 +169,9 @@ const FlightNumber: React.FC<ModalProps> = ({
               <Text style={styles.cancelText}>CANCEL</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.nextButton}>
-              <Text style={styles.nextText}>NEXT</Text>
+              <Text style={styles.nextText} onPress={nexTHandle}>
+                NEXT
+              </Text>
             </TouchableOpacity>
           </View>
         </Animated.View>

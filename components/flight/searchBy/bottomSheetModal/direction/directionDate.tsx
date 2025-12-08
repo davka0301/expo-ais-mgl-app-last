@@ -15,7 +15,9 @@ import { Colors } from "@/constants/color";
 import { Calendar } from "react-native-calendars";
 
 const { height } = Dimensions.get("window");
-const SNAP_HEIGHT = height * 0.7; // Өндрийг Calendar-т тохируулан 70% болгоё
+// Өндрийг Calendar-т тохируулан 70% болгоё
+const SNAP_HEIGHT = height * 0.7;
+
 interface SearchItemData {
   id: string;
   name_title: string;
@@ -91,7 +93,7 @@ const DirectionDate: React.FC<ModalProps> = ({
 
   const handleNextPress = () => {
     onNext(selectedDate);
-    resetDates();
+    slideDown(); // Close modal after selection
   };
 
   return (
@@ -174,24 +176,12 @@ const DirectionDate: React.FC<ModalProps> = ({
 };
 
 const styles = StyleSheet.create({
-  calendarWrapper: {
-    paddingHorizontal: 10,
-    marginBottom: 10,
-  },
-  // Календарийн доорх зайг бөглөж, товчнуудыг доош түлхэнэ
-  spacer: {
-    flex: 1,
-  },
-
-  buttonArea: {
-    paddingHorizontal: 12,
-    paddingBottom: 20, // ✅ Хүссэн paddingBottom: 20
-  },
   backdrop: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     justifyContent: "flex-end",
   },
+
   container: {
     backgroundColor: "white",
     width: "100%",
@@ -219,27 +209,26 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderStyle: "dashed",
     paddingVertical: 10,
-    paddingHorizontal: 10,
+    marginHorizontal: 20,
   },
   title: { fontSize: 16, fontWeight: "600" },
   subtitle: { color: Colors.text_grey },
-  contentContainer: {
-    flex: 1,
-    paddingHorizontal: 12,
-    paddingBottom: 20,
-  },
-  // title: {
-  //   fontSize: 18,
-  //   fontWeight: "bold",
-  //   marginBottom: 10,
-  //   textAlign: "center",
-  // },
-  calendarArea: {
-    flex: 1,
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    padding: 10,
+
+  // CALENDAR
+  calendarWrapper: {
+    paddingHorizontal: 20,
     marginBottom: 10,
+  },
+
+  // Fill remaining space to push buttons down
+  spacer: {
+    flex: 1,
+  },
+
+  // FOOTER
+  buttonArea: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
   },
   buttonContainer: {
     flexDirection: "row",
@@ -260,7 +249,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 5,
     padding: 12,
-    backgroundColor: "#6A5ACD",
+    backgroundColor: Colors.primary,
     borderRadius: 8,
     alignItems: "center",
   },
@@ -272,7 +261,6 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
   },
-  // Ашиглагдахгүй байгаа style-уудыг устгасан
 });
 
 export default DirectionDate;

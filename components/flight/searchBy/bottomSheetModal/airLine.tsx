@@ -10,12 +10,17 @@ import {
   ImageSourcePropType,
   Image,
   TextInput,
+  FlatList,
 } from "react-native";
-import { useCallback, useRef, useState } from "react";
+import Checkbox from "expo-checkbox";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Colors } from "@/constants/color";
+import { useAllFlightLine } from "@/hooks/airLine/useAllFlightAirLineData";
+import { useLanguage } from "@/context/LanguageContext";
+import { useRouter } from "expo-router";
 
 const { height } = Dimensions.get("window");
-const SNAP_HEIGHT = height * 0.7; // Өндрийг Calendar-т тохируулан 70% болгоё
+const SNAP_HEIGHT = height * 0.7;
 
 interface SearchItemData {
   id: string;
@@ -31,16 +36,35 @@ interface ModalProps {
   onClose: () => void;
   onNext: (date: string) => void;
   itemData: SearchItemData;
+  selectedAirport: string;
 }
 
 const AirLine: React.FC<ModalProps> = ({
   itemData,
   isVisible,
   onClose,
+  selectedAirport,
   onNext,
 }) => {
+  const { language } = useLanguage();
+
+  const router = useRouter();
   const translateY = useRef(new Animated.Value(height)).current;
   const slideUpDuration = 300;
+  const today = new Date().toISOString().split("T")[0];
+  const { companies, loading } = useAllFlightLine(today, selectedAirport);
+  const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+
+  const filtered = useMemo(() => {
+    return companies.filter((item) =>
+      item.company.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [search]);
+
+  const resetDates = () => {
+    setSelectedCompany("");
+  };
 
   const slideUp = useCallback(() => {
     Animated.timing(translateY, {
@@ -56,11 +80,14 @@ const AirLine: React.FC<ModalProps> = ({
       duration: slideUpDuration,
       useNativeDriver: true,
     }).start(onClose);
+    resetDates();
   }, [translateY, onClose]);
 
-  if (isVisible) {
-    slideUp();
-  }
+  useEffect(() => {
+    if (isVisible) {
+      slideUp();
+    }
+  }, [isVisible]);
 
   const panResponder = useRef(
     PanResponder.create({
@@ -84,6 +111,20 @@ const AirLine: React.FC<ModalProps> = ({
       },
     })
   ).current;
+
+  const nextHandle = () => {
+    if (!selectedCompany) return;
+
+    router.push({
+      pathname: "/flight/searchBy/searchByAirLine",
+      params: {
+        selectedAirport: selectedAirport,
+        today,
+        company: selectedCompany,
+      },
+    });
+    slideDown();
+  };
 
   return (
     <Modal
@@ -126,21 +167,67 @@ const AirLine: React.FC<ModalProps> = ({
               <Text style={styles.subtitle}>{itemData.sub_title}</Text>
             </View>
           </View>
+
           <View style={styles.inputWrapper}>
             <TextInput
               style={styles.input}
               placeholder={"Flight Number Search"}
               placeholderTextColor="#A9A9A9"
+              value={search}
+              onChangeText={setSearch}
             />
           </View>
+
+          {/* DATA */}
+          <FlatList
+            data={filtered}
+            keyExtractor={(item) => item.flight_id}
+            style={{ marginTop: 10 }}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.row}
+                onPress={() =>
+                  setSelectedCompany(
+                    selectedCompany === item.company ? null : item.company
+                  )
+                }
+              >
+                <Checkbox
+                  value={selectedCompany === item.company}
+                  onValueChange={() =>
+                    setSelectedCompany(
+                      selectedCompany === item.company ? null : item.company
+                    )
+                  }
+                  color={
+                    selectedCompany === item.company ? "#2196F3" : undefined
+                  }
+                />
+
+                <Text style={styles.airlineName}>{item.company}</Text>
+                <Text>{item.company_abbr}</Text>
+                {/* <Image
+                  source={{ uri: item.company_logo }}
+                  style={{
+                    width: 25,
+                    height: 25,
+                    resizeMode: "contain",
+                    marginRight: 12,
+                  }}
+                /> */}
+              </TouchableOpacity>
+            )}
+          />
           {/* FOOTER */}
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.cancelButton} onPress={slideDown}>
-              <Text style={styles.cancelText}>CANCEL</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.nextButton}>
-              <Text style={styles.nextText}>NEXT</Text>
-            </TouchableOpacity>
+          <View style={styles.buttonArea}>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.cancelButton} onPress={slideDown}>
+                <Text style={styles.cancelText}>CANCEL</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.nextButton} onPress={nextHandle}>
+                <Text style={styles.nextText}>NEXT</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </Animated.View>
       </TouchableOpacity>
@@ -189,9 +276,6 @@ const styles = StyleSheet.create({
 
   inputWrapper: {
     height: 40,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
     backgroundColor: "#fff",
     borderWidth: 0.5,
     borderColor: "#000",
@@ -204,9 +288,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     fontSize: 16,
     color: "#333",
-    textAlign: "center",
+    textAlign: "left",
   },
   // FOOTER
+
+  buttonArea: {
+    paddingHorizontal: 12,
+    paddingBottom: 20, // ✅ Хүссэн paddingBottom: 20
+  },
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -238,6 +327,24 @@ const styles = StyleSheet.create({
   nextText: {
     color: "white",
     fontWeight: "bold",
+  },
+
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 5,
+    paddingHorizontal: 20,
+  },
+
+  airlineName: {
+    marginLeft: 10,
+    fontSize: 16,
+    flex: 1,
+  },
+
+  code: {
+    fontWeight: "700",
+    color: "#555",
   },
 });
 

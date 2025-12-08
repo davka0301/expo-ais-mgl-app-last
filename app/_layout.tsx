@@ -104,6 +104,31 @@ export default function RootLayout() {
                     ) : null,
                 }}
               />
+
+              <Stack.Screen
+                name="flight/searchBy/searchByAirLine.tsx"
+                options={{
+                  headerShown: true,
+                  headerTitle: () => <FlightNumberHeader />,
+                  headerLeft: () =>
+                    Platform.OS === "ios" ? (
+                      <TouchableOpacity
+                        onPress={() => router.back()}
+                        style={{
+                          borderRadius: 20,
+                          borderWidth: 1,
+                          padding: 3,
+                        }}
+                      >
+                        <Ionicons
+                          name="arrow-back-outline"
+                          size={24}
+                          color="black"
+                        />
+                      </TouchableOpacity>
+                    ) : null,
+                }}
+              />
               <Stack.Screen
                 name="flight/searchBy/searchByDirection"
                 options={{

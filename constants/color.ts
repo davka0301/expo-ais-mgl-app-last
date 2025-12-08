@@ -9,4 +9,5 @@ export const Colors = {
   text_white: "#fff",
   text_grey: "#555",
   aip_searchBg: "#ddddee",
+  tab_grey: "#8b8b8b",
 };

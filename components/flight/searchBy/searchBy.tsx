@@ -95,6 +95,7 @@ const SearchBy = ({ selectedAirport }: { selectedAirport: string }) => {
         onClose={handleCloseModal}
         onNext={handleFlight}
         itemData={selectedItem}
+        selectedAirport={selectedAirport}
       />
 
       <AirLine
@@ -102,13 +103,16 @@ const SearchBy = ({ selectedAirport }: { selectedAirport: string }) => {
         onClose={handleCloseModal}
         onNext={handleAirLine}
         itemData={selectedItem}
+        selectedAirport={selectedAirport}
       />
+
       <DirectionDate
         isVisible={activeModal === "3"}
         onClose={handleCloseModal}
         onNext={handleDirection}
         itemData={selectedItem}
       />
+
       <DirectionSelect
         isVisible={isDirectionListVisible}
         onClose={handleCloseModal}
@@ -116,6 +120,7 @@ const SearchBy = ({ selectedAirport }: { selectedAirport: string }) => {
         selectedAirport={selectedAirport}
         date={selectedDirectionDate}
       />
+
       <DateList
         isVisible={activeModal === "4"}
         onClose={handleCloseModal}
