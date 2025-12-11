@@ -38,8 +38,8 @@ export const useAllFlightLine = (date: string, airport: string) => {
     const unique: { [key: string]: AllFlightProps } = {};
 
     data.forEach((item) => {
-      if (!unique[item.company]) {
-        unique[item.company] = item;
+      if (!unique[(item.company, item.company_logo)]) {
+        unique[(item.company, item.company_logo)] = item;
       }
     });
 

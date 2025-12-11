@@ -173,14 +173,14 @@ const AirLine: React.FC<ModalProps> = ({
               style={styles.input}
               placeholder={"Flight Number Search"}
               placeholderTextColor="#A9A9A9"
-              value={search}
-              onChangeText={setSearch}
+              // value={search}
+              // onChangeText={setSearch}
             />
           </View>
 
           {/* DATA */}
           <FlatList
-            data={filtered}
+            data={companies}
             keyExtractor={(item) => item.flight_id}
             style={{ marginTop: 10 }}
             renderItem={({ item }) => (

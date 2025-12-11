@@ -17,7 +17,7 @@ const initialState: SearchItem = {
   name_title_mn: "",
   sub_title: "",
   sub_title_mn: "",
-  icon: "", // Use a default or null
+  icon: "",
 };
 const SearchBy = ({ selectedAirport }: { selectedAirport: string }) => {
   const [activeModal, setActiveModal] = useState<ActiveModal>(null);
@@ -80,9 +80,9 @@ const SearchBy = ({ selectedAirport }: { selectedAirport: string }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.headerText}>Search By</Text>
-      {SEARCH_BY.map((item) => (
+      {SEARCH_BY.map((item, index) => (
         <SearchByItem
-          key={item.id}
+          key={item.id || `item-${index}`}
           iconName={item.icon}
           title={item.name_title}
           subtitle={item.sub_title}

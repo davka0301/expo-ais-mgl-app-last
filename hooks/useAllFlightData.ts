@@ -29,22 +29,26 @@ export const useAllFlight = (
           flights = flights.filter((f: AllFlightProps) => {
             return (
               f.arr_ad.toLowerCase().includes(q) ||
+              f.arr_ad_code.toLowerCase().includes(q) ||
               f.dep_ad_code.toLowerCase().includes(q) ||
               f.dep_location.toLowerCase().includes(q) ||
               f.arr_location.toLowerCase().includes(q) ||
               f.arr_location_en.toLowerCase().includes(q) ||
-              f.dep_location.toLowerCase().includes(q) ||
               f.dep_location_en.toLowerCase().includes(q) ||
               f.dep_ad.toLowerCase().includes(q) ||
               f.dep_ad_en.toLowerCase().includes(q) ||
               f.arr_ad_en.toLowerCase().includes(q) ||
-              f.company.toLowerCase().includes(q)
+              f.company.toLowerCase().includes(q) ||
+              f.iata.toLowerCase().includes(q)
             );
           });
           setData(flights);
         } else if (filter === "2") {
           flights = flights.filter((f: AllFlightProps) => {
-            return f.dep_ad_code.toLowerCase().includes(q);
+            return (
+              f.dep_ad_code.toLowerCase().includes(q) ||
+              f.arr_ad_code.toLowerCase().includes(q)
+            );
           });
           setData(flights);
         } else if (filter === "3") {

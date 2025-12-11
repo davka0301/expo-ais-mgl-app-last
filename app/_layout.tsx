@@ -51,6 +51,14 @@ export default function RootLayout() {
                 }}
               />
               <Stack.Screen
+                name="flight/[flight_id]"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="flight/searchFilter/searchFilter"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
                 name="flight/bookmark/bookmark"
                 options={{
                   headerTitle: () => <BookMartFilghtHeader />,
@@ -83,8 +91,7 @@ export default function RootLayout() {
               <Stack.Screen
                 name="flight/searchBy/searchByFlightNumber"
                 options={{
-                  headerShown: true,
-                  headerTitle: () => <FlightNumberHeader />,
+                  headerShown: false,
                   headerLeft: () =>
                     Platform.OS === "ios" ? (
                       <TouchableOpacity
@@ -106,31 +113,19 @@ export default function RootLayout() {
               />
 
               <Stack.Screen
-                name="flight/searchBy/searchByAirLine.tsx"
+                name="flight/searchBy/searchByAirLine"
                 options={{
-                  headerShown: true,
-                  headerTitle: () => <FlightNumberHeader />,
-                  headerLeft: () =>
-                    Platform.OS === "ios" ? (
-                      <TouchableOpacity
-                        onPress={() => router.back()}
-                        style={{
-                          borderRadius: 20,
-                          borderWidth: 1,
-                          padding: 3,
-                        }}
-                      >
-                        <Ionicons
-                          name="arrow-back-outline"
-                          size={24}
-                          color="black"
-                        />
-                      </TouchableOpacity>
-                    ) : null,
+                  headerShown: false,
                 }}
               />
               <Stack.Screen
                 name="flight/searchBy/searchByDirection"
+                options={{
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="flight/searchBy/searchByDate"
                 options={{
                   headerShown: false,
                 }}

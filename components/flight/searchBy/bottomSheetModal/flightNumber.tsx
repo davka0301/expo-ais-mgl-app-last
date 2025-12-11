@@ -99,6 +99,7 @@ const FlightNumber: React.FC<ModalProps> = ({
   ).current;
 
   const nexTHandle = () => {
+    console.log("sdsa");
     if (!search) {
       Alert.alert("Анхааруулга", "Та нислэгийн дугаараа оруулна уу...");
       return;
