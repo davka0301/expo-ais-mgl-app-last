@@ -9,18 +9,19 @@ import {
   PanResponder,
   ImageSourcePropType,
   Image,
-  FlatList,
   TextInput,
-  Alert,
+  FlatList,
 } from "react-native";
-import { useCallback, useMemo, useRef, useState } from "react";
+import Checkbox from "expo-checkbox";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Colors } from "@/constants/color";
-import { Calendar } from "react-native-calendars";
+import { useAllFlightLine } from "@/hooks/airLine/useAllFlightAirLineData";
+import { useLanguage } from "@/context/LanguageContext";
 import { useRouter } from "expo-router";
-import { useDirectionAirport } from "@/hooks/direction/useDirectionAiportData";
 
 const { height } = Dimensions.get("window");
-const SNAP_HEIGHT = height * 0.7; // Өндрийг Calendar-т тохируулан 70% болгоё
+const SNAP_HEIGHT = height * 0.7;
+
 interface SearchItemData {
   id: string;
   name_title: string;
@@ -29,29 +30,39 @@ interface SearchItemData {
   sub_title_mn: string;
   icon: ImageSourcePropType;
 }
+
 interface ModalProps {
   isVisible: boolean;
   onClose: () => void;
+  onNext: (date: string) => void;
   itemData: SearchItemData;
   selectedAirport: string;
-  date: string;
 }
 
-const DirectionSelect: React.FC<ModalProps> = ({
+const AirLine: React.FC<ModalProps> = ({
   itemData,
   isVisible,
   onClose,
   selectedAirport,
-  date,
+  onNext,
 }) => {
   const router = useRouter();
   const translateY = useRef(new Animated.Value(height)).current;
-  const [selectedDirectionCode, setSelectedDirectionCode] = useState<
-    string | null
-  >(null);
   const slideUpDuration = 300;
+  const today = new Date().toISOString().split("T")[0];
+  const { companies, loading } = useAllFlightLine(today, selectedAirport);
+  const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
 
-  const { data, loading } = useDirectionAirport(date, selectedAirport);
+  const filtered = useMemo(() => {
+    return companies.filter((item) =>
+      item.company.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [search]);
+
+  const resetDates = () => {
+    setSelectedCompany("");
+  };
 
   const slideUp = useCallback(() => {
     Animated.timing(translateY, {
@@ -67,11 +78,14 @@ const DirectionSelect: React.FC<ModalProps> = ({
       duration: slideUpDuration,
       useNativeDriver: true,
     }).start(onClose);
+    resetDates();
   }, [translateY, onClose]);
 
-  if (isVisible) {
-    slideUp();
-  }
+  useEffect(() => {
+    if (isVisible) {
+      slideUp();
+    }
+  }, [isVisible]);
 
   const panResponder = useRef(
     PanResponder.create({
@@ -96,17 +110,15 @@ const DirectionSelect: React.FC<ModalProps> = ({
     })
   ).current;
 
-  const handleNextPress = () => {
-    if (!selectedDirectionCode) {
-      Alert.alert("Анхааруулга", "Та чиглэлээ сонгоно уу.");
-      return;
-    }
+  const nextHandle = () => {
+    if (!selectedCompany) return;
+
     router.push({
-      pathname: "/flight/searchBy/searchByDirection",
+      pathname: "/flight/searchBy/searchByAirLine",
       params: {
-        date: date, // ✅ Prop-оор ирсэн зөв огноог ашиглана
-        airportCode: selectedAirport, // ✅ Нисэх буудлын кодыг ашиглана
-        directionCode: selectedDirectionCode,
+        selectedAirport: selectedAirport,
+        today,
+        company: selectedCompany,
       },
     });
     slideDown();
@@ -146,7 +158,6 @@ const DirectionSelect: React.FC<ModalProps> = ({
           <View style={styles.handleContainer} {...panResponder.panHandlers}>
             <View style={styles.handle} />
           </View>
-
           <View style={styles.headerRow}>
             <Image source={itemData.icon} style={{ width: 35, height: 35 }} />
             <View style={{ marginLeft: 10 }}>
@@ -158,50 +169,63 @@ const DirectionSelect: React.FC<ModalProps> = ({
           <View style={styles.inputWrapper}>
             <TextInput
               style={styles.input}
-              placeholder={"Direction search"}
+              placeholder={"Flight Number Search"}
               placeholderTextColor="#A9A9A9"
+              // value={search}
+              // onChangeText={setSearch}
             />
           </View>
 
+          {/* DATA */}
           <FlatList
-            data={data}
-            keyExtractor={(item) => item.direction_code}
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={true}
-            style={{ marginTop: 12 }}
+            data={companies}
+            keyExtractor={(item) => item.flight_id}
+            style={{ marginTop: 10 }}
             renderItem={({ item }) => (
               <TouchableOpacity
-                style={[
-                  styles.directionItem,
-                  selectedDirectionCode === item.direction_code &&
-                    styles.selectedDirectionItem,
-                ]}
-                onPress={() => setSelectedDirectionCode(item.direction_code)}
+                style={styles.row}
+                onPress={() =>
+                  setSelectedCompany(
+                    selectedCompany === item.company ? null : item.company
+                  )
+                }
               >
-                <Text
-                  style={[
-                    styles.directionText,
-                    selectedDirectionCode === item.direction_code &&
-                      styles.selectedDirectionText,
-                  ]}
-                >
-                  {item.direction_name_en}
-                </Text>
+                <Checkbox
+                  value={selectedCompany === item.company}
+                  onValueChange={() =>
+                    setSelectedCompany(
+                      selectedCompany === item.company ? null : item.company
+                    )
+                  }
+                  color={
+                    selectedCompany === item.company ? "#2196F3" : undefined
+                  }
+                />
+
+                <Text style={styles.airlineName}>{item.company}</Text>
+                <Text>{item.company_abbr}</Text>
+                {/* <Image
+                  source={{ uri: item.company_logo }}
+                  style={{
+                    width: 25,
+                    height: 25,
+                    resizeMode: "contain",
+                    marginRight: 12,
+                  }}
+                /> */}
               </TouchableOpacity>
             )}
           />
-
-          <View style={styles.footerContainer}>
-            <TouchableOpacity style={styles.cancelButton} onPress={slideDown}>
-              <Text style={styles.cancelText}>CANCEL</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.nextButton}
-              onPress={handleNextPress}
-              disabled={!selectedDirectionCode}
-            >
-              <Text style={styles.nextText}>NEXT</Text>
-            </TouchableOpacity>
+          {/* FOOTER */}
+          <View style={styles.buttonArea}>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.cancelButton} onPress={slideDown}>
+                <Text style={styles.cancelText}>CANCEL</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.nextButton} onPress={nextHandle}>
+                <Text style={styles.nextText}>NEXT</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </Animated.View>
       </TouchableOpacity>
@@ -215,6 +239,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     justifyContent: "flex-end",
   },
+
   container: {
     backgroundColor: "white",
     width: "100%",
@@ -223,10 +248,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     overflow: "hidden",
-    // 💡 Add flex: 1 and flexDirection: 'column' to make it a flex container
-    // so we can push the footer to the bottom
-    flex: 1,
-    flexDirection: "column",
   },
   handleContainer: {
     paddingVertical: 10,
@@ -238,6 +259,7 @@ const styles = StyleSheet.create({
     borderRadius: 2.5,
     backgroundColor: "#ccc",
   },
+
   headerRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -245,56 +267,41 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderStyle: "dashed",
     paddingVertical: 10,
-    paddingHorizontal: 10,
+    marginHorizontal: 20,
   },
   title: { fontSize: 16, fontWeight: "600" },
   subtitle: { color: Colors.text_grey },
 
   inputWrapper: {
     height: 40,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
     backgroundColor: "#fff",
     borderWidth: 0.5,
     borderColor: "#000",
     borderRadius: 10,
     marginTop: 5,
-    width: "100%",
+    marginHorizontal: 20,
   },
   input: {
     flex: 1,
     paddingHorizontal: 20,
     fontSize: 16,
     color: "#333",
-    textAlign: "center",
+    textAlign: "left",
   },
-  directionItem: {
-    padding: 12,
-    marginVertical: 6,
-    borderRadius: 8,
-    backgroundColor: Colors.grey,
+  // FOOTER
+
+  buttonArea: {
+    paddingHorizontal: 12,
+    paddingBottom: 20, // ✅ Хүссэн paddingBottom: 20
   },
-  selectedDirectionItem: {
-    backgroundColor: Colors.primary,
-  },
-  directionText: {
-    color: "#000",
-  },
-  selectedDirectionText: {
-    color: "#fff",
-    fontWeight: "bold",
-  },
-  footerContainer: {
+  buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     paddingVertical: 10,
     borderTopWidth: 1,
     borderTopColor: "#eee",
-    paddingHorizontal: 12,
-    paddingBottom: 20, // ✅ Хүссэн paddingBottom: 20
+    paddingHorizontal: 20,
   },
-
   cancelButton: {
     flex: 1,
     marginRight: 5,
@@ -319,6 +326,24 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
   },
+
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 5,
+    paddingHorizontal: 20,
+  },
+
+  airlineName: {
+    marginLeft: 10,
+    fontSize: 16,
+    flex: 1,
+  },
+
+  code: {
+    fontWeight: "700",
+    color: "#555",
+  },
 });
 
-export default DirectionSelect;
+export default AirLine;

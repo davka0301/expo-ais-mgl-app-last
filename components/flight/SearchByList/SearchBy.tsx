@@ -1,14 +1,14 @@
 import { Alert, StyleSheet, Text, View } from "react-native";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useState } from "react";
 import { SEARCH_BY } from "@/constants/searchBy";
-import SearchByItem from "./searchByItem";
-import FlightNumber from "./bottomSheetModal/flightNumber";
-import AirLine from "./bottomSheetModal/airLine";
-import DateList from "./bottomSheetModal/dateList";
-import DirectionDate from "./bottomSheetModal/direction/directionDate";
-import DirectionSelect from "./bottomSheetModal/direction/directionSelect";
-type SearchItem = (typeof SEARCH_BY)[0];
+import SearchByItem from "./SearchByItem";
+import FlightNumber from "./Modals/FlightNumber";
+import AirLine from "./Modals/AirLine";
+import DateList from "./Modals/DateList";
+import DirectionDate from "./Modals/Direction/DirectionDate";
+import DirectionSelect from "./Modals/Direction/DirectionSelect";
 
+type SearchItem = (typeof SEARCH_BY)[0];
 type ActiveModal = "1" | "2" | "3" | "4" | null;
 
 const initialState: SearchItem = {
@@ -19,6 +19,7 @@ const initialState: SearchItem = {
   sub_title_mn: "",
   icon: "",
 };
+
 const SearchBy = ({ selectedAirport }: { selectedAirport: string }) => {
   const [activeModal, setActiveModal] = useState<ActiveModal>(null);
   const [selectedItem, setSelectedItem] = useState<SearchItem>(initialState);
@@ -46,7 +47,6 @@ const SearchBy = ({ selectedAirport }: { selectedAirport: string }) => {
         break;
     }
   };
-
   const handleCloseModal = () => {
     setActiveModal(null);
     setIsDirectionListVisible(false);
@@ -69,27 +69,22 @@ const SearchBy = ({ selectedAirport }: { selectedAirport: string }) => {
     handleCloseModal();
   };
   const handleDirection = (date: string) => {
-    // Do something with the entered flight details
-    // Alert.alert(`Entered ${selectedItem.name_title}`, `Value: ${value}`);
-    // handleCloseModal();
-    setSelectedDirectionDate(date); // 1. Сонгосон огноог хадгална
+    setSelectedDirectionDate(date);
     setIsDirectionListVisible(true);
     setActiveModal(null);
   };
-
   return (
-    <View style={styles.container}>
+    <View>
       <Text style={styles.headerText}>Search By</Text>
-      {SEARCH_BY.map((item, index) => (
+      {SEARCH_BY.map((item) => (
         <SearchByItem
-          key={item.id || `item-${index}`}
+          key={item.id}
           iconName={item.icon}
           title={item.name_title}
           subtitle={item.sub_title}
           onPress={() => handleItemPress(item)}
         />
       ))}
-
       <FlightNumber
         isVisible={activeModal === "1"}
         onClose={handleCloseModal}
@@ -97,7 +92,6 @@ const SearchBy = ({ selectedAirport }: { selectedAirport: string }) => {
         itemData={selectedItem}
         selectedAirport={selectedAirport}
       />
-
       <AirLine
         isVisible={activeModal === "2"}
         onClose={handleCloseModal}
@@ -105,7 +99,6 @@ const SearchBy = ({ selectedAirport }: { selectedAirport: string }) => {
         itemData={selectedItem}
         selectedAirport={selectedAirport}
       />
-
       <DirectionDate
         isVisible={activeModal === "3"}
         onClose={handleCloseModal}
@@ -133,12 +126,7 @@ const SearchBy = ({ selectedAirport }: { selectedAirport: string }) => {
 };
 
 export default SearchBy;
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
   headerText: {
     fontSize: 18,
     fontFamily: "Bold",

@@ -93,7 +93,7 @@ const DirectionDate: React.FC<ModalProps> = ({
 
   const handleNextPress = () => {
     onNext(selectedDate);
-    slideDown(); // Close modal after selection
+    // slideDown();
   };
 
   return (

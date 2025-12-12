@@ -1,17 +1,20 @@
-import FlightHeader from "@/components/flight/flightHeader";
+import FlightHeader from "@/components/flight/FlightHeader/FlightHeader";
 import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { useAirport } from "@/hooks/useAirportData";
-import SearchBy from "@/components/flight/searchBy/searchBy";
-import Searchflight from "@/components/flight/searchflight";
+import Searchflight from "@/components/flight/SearchFilter/SearchFilter";
 import { Colors } from "@/constants/color";
 import moment from "moment";
+import { useResponsive } from "@/hooks/useResponsive";
+import SearchBy from "@/components/flight/SearchByList/SearchBy";
 
 const Flight = () => {
+  const { rw, rh, rf, cardWidth } = useResponsive();
   const today = moment().format("DD-MMM-YYYY");
   const [selAirport, setSelAirport] = useState("ZMCK");
-  const { airport, loading } = useAirport(selAirport);
+  const { airport } = useAirport(selAirport);
+
   return (
     <View style={styles.container}>
       <StatusBar style="dark" />
@@ -22,7 +25,10 @@ const Flight = () => {
         selectedAirport={selAirport}
         onSelectAirport={(code) => setSelAirport(code)}
       />
-      <SearchBy selectedAirport={selAirport} />
+
+      <View style={{ marginTop: rh(250), paddingHorizontal: rh(16) }}>
+        <SearchBy selectedAirport={selAirport} />
+      </View>
     </View>
   );
 };
@@ -33,16 +39,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.white,
-  },
-  //
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  text: {
-    fontSize: 16,
-    marginBottom: 20,
-    textAlign: "center",
   },
 });

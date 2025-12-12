@@ -9,6 +9,7 @@ import {
 import React from "react";
 import { Colors } from "@/constants/color";
 import { Ionicons } from "@expo/vector-icons";
+import { useResponsive } from "@/hooks/useResponsive";
 
 interface SearchByItemProps {
   iconName: ImageSourcePropType;
@@ -23,20 +24,32 @@ const SearchByItem = ({
   subtitle,
   onPress,
 }: SearchByItemProps) => {
+  const { rw, rh, rf, cardWidth } = useResponsive();
   return (
     <TouchableOpacity
-      style={styles.container}
+      style={[
+        styles.container,
+        { marginBottom: rh(10), paddingVertical: rh(10) },
+      ]}
       activeOpacity={0.8}
       onPress={onPress}
     >
       <View style={styles.leftRow}>
-        <Image source={iconName} style={styles.icon} />
+        <Image
+          source={iconName}
+          style={{
+            width: rh(30),
+            height: rh(30),
+            marginVertical: rh(5),
+            marginRight: rh(12),
+          }}
+        />
         <View>
           <Text style={styles.title}>{title}</Text>
           {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
         </View>
       </View>
-      <Ionicons name="chevron-forward" size={18} color={Colors.text_grey} />
+      <Ionicons name="chevron-forward" size={24} color={Colors.dark} />
     </TouchableOpacity>
   );
 };
@@ -48,11 +61,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: Colors.grey,
-    borderStyle: "dashed",
-    marginBottom: 8,
+    borderStyle: "solid",
+    marginBottom: 5,
   },
   leftRow: { flexDirection: "row", alignItems: "center" },
   icon: { width: 30, height: 30, margin: 10 },
